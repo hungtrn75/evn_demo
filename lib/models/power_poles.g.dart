@@ -21,14 +21,15 @@ class PowerPolesAdapter extends TypeAdapter<PowerPoles> {
       property: fields[1] as String?,
       latitude: fields[2] as double?,
       longitude: fields[3] as double?,
-      uuid: fields[4] as String,
-    );
+    )
+      ..uuid = fields[4] as String
+      ..createAt = fields[5] as DateTime;
   }
 
   @override
   void write(BinaryWriter writer, PowerPoles obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.elevation)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class PowerPolesAdapter extends TypeAdapter<PowerPoles> {
       ..writeByte(3)
       ..write(obj.longitude)
       ..writeByte(4)
-      ..write(obj.uuid);
+      ..write(obj.uuid)
+      ..writeByte(5)
+      ..write(obj.createAt);
   }
 
   @override

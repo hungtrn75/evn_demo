@@ -1,5 +1,7 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:collect_data/models/power_poles.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class DisplayPage extends StatefulWidget {
   final int type;
@@ -13,37 +15,41 @@ class DisplayPage extends StatefulWidget {
 }
 
 class _DisplayPageState extends State<DisplayPage> {
+  static DateFormat dateFormat = DateFormat("dd/MM/yyyy HH:mm:ss");
+
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
       itemBuilder: (_, index) {
         final item = widget.data[index];
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(
-              height: 10,
+        final createdAt = dateFormat.format(item.createAt);
+        return ListTile(
+            contentPadding: const EdgeInsets.only(
+              left: 15,
+              top: 5,
+              bottom: 5,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Côt điện #${item.uuid}"),
-                if (widget.type == 2)
-                  IconButton(
-                    icon: const Icon(Icons.tips_and_updates, color: Colors.blue,),
+            title: AutoSizeText(
+              '#${item.uuid}',
+              maxLines: 1,
+            ),
+            subtitle: Text(
+              createdAt,
+            ),
+            onTap: () {},
+            trailing: widget.type == 2
+                ? IconButton(
+                    icon: const Icon(
+                      Icons.tips_and_updates,
+                      color: Colors.blue,
+                    ),
                     onPressed: () {},
                   )
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-          ],
-        );
+                : null);
       },
-      separatorBuilder: (_, __) => const Divider(),
+      separatorBuilder: (_, __) => const Divider(
+        height: 1,
+      ),
       itemCount: widget.data.length,
     );
   }

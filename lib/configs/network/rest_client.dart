@@ -1,8 +1,4 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
-
-import 'package:http_parser/http_parser.dart';
 import 'package:retrofit/retrofit.dart';
 
 import '../constants/app_url.dart';
@@ -15,4 +11,21 @@ abstract class RestClient {
 
   @GET(AppUrl.versionCode)
   Future<dynamic> getVersion();
+
+  @GET(AppUrl.directionUrl)
+  Future<dynamic> getDirection(
+    @Path("waypoints") String waypoints,
+  );
+
+  @GET(AppUrl.geocodeUrl)
+  Future<dynamic> geocoding(
+    @Query("search") String search,
+    @Query("limit") int limit,
+  );
+
+  @GET(AppUrl.reverseGeocodeUrl)
+  Future<dynamic> reverseGeocoding(
+    @Query("lat") double latitude,
+    @Query("limit") double longitude,
+  );
 }

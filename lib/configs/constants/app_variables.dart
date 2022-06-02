@@ -1,5 +1,4 @@
 import 'package:collect_data/models/power_poles.dart';
-import 'package:uuid/uuid.dart';
 
 class AppVariable {
   AppVariable._();
@@ -257,16 +256,15 @@ class AppVariable {
       final coordinate = (feature["geometry"]
           as Map<String, dynamic>)["coordinates"] as List<double>;
       final powerPoles = PowerPoles(
-        uuid: const Uuid().v4(),
         latitude: coordinate[1],
         longitude: coordinate[0],
-        elevation: i % 2 == 0 ? "123" : null,
+        elevation: i % 2 == 0 ? "${10 + i}" : null,
       );
       result.add(powerPoles);
     }
 
     for (var i = 0; i <= 7; i++) {
-      final powerPoles = PowerPoles(uuid: const Uuid().v4());
+      final powerPoles = PowerPoles();
       result.add(powerPoles);
     }
     return result;

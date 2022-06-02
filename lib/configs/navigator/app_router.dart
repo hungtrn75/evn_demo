@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:collect_data/screens/form/form_page.dart';
 import 'package:collect_data/screens/home/home_page.dart';
 import 'package:collect_data/screens/map/map_page.dart';
 import 'package:collect_data/screens/splash/splash_page.dart';
@@ -14,6 +15,7 @@ part 'app_router.gr.dart';
     AutoRoute(page: MapPage, path: RouteName.mapPage),
     AutoRoute(page: HomePage, path: RouteName.homePage),
     AutoRoute(page: SplashPage, path: RouteName.splashScreen),
+    AutoRoute(page: FormPage, path: RouteName.formPage),
   ],
 )
 class AppRouter extends _$AppRouter {}

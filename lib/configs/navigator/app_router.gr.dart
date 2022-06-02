@@ -28,6 +28,10 @@ class _$AppRouter extends RootStackRouter {
     SplashPageRoute.name: (routeData) {
       return MaterialPageX<dynamic>(
           routeData: routeData, child: const SplashPage());
+    },
+    FormPageRoute.name: (routeData) {
+      return MaterialPageX<dynamic>(
+          routeData: routeData, child: const FormPage());
     }
   };
 
@@ -35,7 +39,8 @@ class _$AppRouter extends RootStackRouter {
   List<RouteConfig> get routes => [
         RouteConfig(MapPageRoute.name, path: 'MapPage'),
         RouteConfig(HomePageRoute.name, path: 'HomePage'),
-        RouteConfig(SplashPageRoute.name, path: 'SplashScreen')
+        RouteConfig(SplashPageRoute.name, path: 'SplashScreen'),
+        RouteConfig(FormPageRoute.name, path: 'FormPage')
       ];
 }
 
@@ -61,4 +66,12 @@ class SplashPageRoute extends PageRouteInfo<void> {
   const SplashPageRoute() : super(SplashPageRoute.name, path: 'SplashScreen');
 
   static const String name = 'SplashPageRoute';
+}
+
+/// generated route for
+/// [FormPage]
+class FormPageRoute extends PageRouteInfo<void> {
+  const FormPageRoute() : super(FormPageRoute.name, path: 'FormPage');
+
+  static const String name = 'FormPageRoute';
 }
