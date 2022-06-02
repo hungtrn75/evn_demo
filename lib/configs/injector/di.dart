@@ -32,8 +32,6 @@ class DI {
 
     final powerPolesBox = await Hive.openBox<PowerPoles>('powerPolesBox');
 
-    // farmDrafts.clear();
-    // draftValues.clear();
     _getIt.registerSingleton(powerPolesBox);
   }
 

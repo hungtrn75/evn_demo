@@ -14,10 +14,7 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
-  static const String MAP_SOURCE = "map_source";
-  static const String MAP_SYMBOL_LAYER = "map_symbol_layer";
-  static const String DEFINED_ICON = "defined_icon";
-  static const String NON_DEFINED_ICON = "non_defined_icon";
+
 
   MapboxMapController? mapController;
   final Box<PowerPoles> powerPolesBox = DI.resolve();
@@ -27,8 +24,8 @@ class _MapPageState extends State<MapPage> {
 
     final ByteData definedBytes = await rootBundle.load('assets/icons/defined_pin.png');
     final ByteData nonDefinedBytes = await rootBundle.load('assets/icons/non_defined_pin.png');
-    await mapController?.addImage(DEFINED_ICON, definedBytes.buffer.asUint8List());
-    await mapController?.addImage(NON_DEFINED_ICON, nonDefinedBytes.buffer.asUint8List());
+    await mapController?.addImage(AppVariable.DEFINED_ICON, definedBytes.buffer.asUint8List());
+    await mapController?.addImage(AppVariable.NON_DEFINED_ICON, nonDefinedBytes.buffer.asUint8List());
 
     final definedPowerPolesList = powerPolesBox.values
         .where((powerPoles) =>
@@ -37,12 +34,12 @@ class _MapPageState extends State<MapPage> {
     final geoSourceData = AppVariable.listToGeoJson(definedPowerPolesList);
 
     await controller.addSource(
-        MAP_SOURCE, GeojsonSourceProperties(data: geoSourceData));
+        AppVariable.MAP_SOURCE, GeojsonSourceProperties(data: geoSourceData));
     await controller.addSymbolLayer(
-      MAP_SOURCE,
-      MAP_SYMBOL_LAYER,
+      AppVariable.MAP_SOURCE,
+      AppVariable.MAP_SYMBOL_LAYER,
       const SymbolLayerProperties(
-        iconImage: DEFINED_ICON,
+        iconImage: ["get", "defined"],
         iconSize: 0.2,
         iconAllowOverlap: true,
       ),

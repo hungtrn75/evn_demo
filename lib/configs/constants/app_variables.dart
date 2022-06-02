@@ -4,6 +4,11 @@ import 'package:uuid/uuid.dart';
 class AppVariable {
   AppVariable._();
 
+  static const String MAP_SOURCE = "map_source";
+  static const String MAP_SYMBOL_LAYER = "map_symbol_layer";
+  static const String DEFINED_ICON = "defined_icon";
+  static const String NON_DEFINED_ICON = "non_defined_icon";
+
   static const featureCollection = {
     "type": "FeatureCollection",
     "features": [
@@ -246,13 +251,17 @@ class AppVariable {
     final features =
         (featureCollection["features"]) as List<Map<String, dynamic>>;
     final List<PowerPoles> result = [];
+    var i = 0;
     for (var feature in features) {
+      i++;
       final coordinate = (feature["geometry"]
           as Map<String, dynamic>)["coordinates"] as List<double>;
       final powerPoles = PowerPoles(
-          uuid: const Uuid().v4(),
-          latitude: coordinate[1],
-          longitude: coordinate[0]);
+        uuid: const Uuid().v4(),
+        latitude: coordinate[1],
+        longitude: coordinate[0],
+        elevation: i % 2 == 0 ? "123" : null,
+      );
       result.add(powerPoles);
     }
 

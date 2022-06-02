@@ -1,3 +1,5 @@
+import 'package:collect_data/configs/constants/app_variables.dart';
+import 'package:collect_data/configs/navigator/app_router.dart';
 import 'package:hive/hive.dart';
 
 part 'power_poles.g.dart';
@@ -29,6 +31,9 @@ class PowerPoles extends HiveObject {
         "uuid": uuid,
         "elevation": elevation,
         "property": property,
+        "defined": elevation != null
+            ? AppVariable.DEFINED_ICON
+            : AppVariable.NON_DEFINED_ICON,
       },
       "geometry": {
         "type": "Point",
