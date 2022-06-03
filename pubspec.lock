@@ -18,9 +18,11 @@ packages:
   another_flushbar:
     dependency: "direct main"
     description:
-      name: another_flushbar
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: updatenullsafet
+      resolved-ref: a13ae4e524d08bb7fe1dfa9f0555e5c1c3c5b5bf
+      url: "https://github.com/floxydio/another-flushbar.git"
+    source: git
     version: "1.10.29"
   archive:
     dependency: transitive

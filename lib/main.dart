@@ -1,4 +1,6 @@
+import 'package:collect_data/configs/bloc/delegate.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'configs/injector/di.dart';
@@ -10,6 +12,7 @@ void main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   await DI.configureDependencies();
+  BlocOverrides.runZoned(() {}, blocObserver: AppBlocObserver());
   runApp(const MyApp());
 }
 

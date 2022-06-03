@@ -1,3 +1,5 @@
+import 'package:collect_data/models/reverse_geocoding.dart';
+import 'package:collect_data/models/routing.dart';
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -13,7 +15,7 @@ abstract class RestClient {
   Future<dynamic> getVersion();
 
   @GET(AppUrl.directionUrl)
-  Future<dynamic> getDirection(
+  Future<DirectionInfo> getDirection(
     @Path("waypoints") String waypoints,
   );
 
@@ -24,8 +26,8 @@ abstract class RestClient {
   );
 
   @GET(AppUrl.reverseGeocodeUrl)
-  Future<dynamic> reverseGeocoding(
+  Future<ReverseGeocodingWrapper> reverseGeocoding(
     @Query("lat") double latitude,
-    @Query("limit") double longitude,
+    @Query("lng") double longitude,
   );
 }

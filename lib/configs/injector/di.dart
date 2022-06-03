@@ -1,4 +1,5 @@
 
+import 'package:collect_data/configs/network/app_repository.dart';
 import 'package:collect_data/models/power_poles.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -24,7 +25,7 @@ class DI {
     _getIt.registerSingleton(restClient);
 
     /** Repositories **/
-
+    _getIt.registerSingleton(AppRepository(restClient: restClient));
 
     /** Hive **/
     await Hive.initFlutter();

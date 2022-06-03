@@ -33,18 +33,19 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<dynamic> getDirection(waypoints) async {
+  Future<DirectionInfo> getDirection(waypoints) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch(_setStreamType<dynamic>(Options(
+    final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
+        DirectionInfo>(Options(
             method: 'GET', headers: _headers, extra: _extra)
         .compose(_dio.options,
-            'https://api.mapbox.com/directions/v5/mapbox/driving-traffic/${waypoints}?alternatives=false&geometries=geojson&language=vi&overview=full&steps=true&access_token=',
+            'https://api.mapbox.com/directions/v5/mapbox/driving-traffic/${waypoints}?alternatives=false&geometries=geojson&language=vi&overview=full&steps=true&access_token=pk.eyJ1IjoiaHVuZ3Rybjc1IiwiYSI6ImNraWUwdndkNDFvdjEyenM1aHI4MW03MmUifQ.wxzz5LIISMr_qcmdc4U-Cg',
             queryParameters: queryParameters, data: _data)
         .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = _result.data;
+    final value = DirectionInfo.fromJson(_result.data!);
     return value;
   }
 
@@ -68,21 +69,22 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<dynamic> reverseGeocoding(latitude, longitude) async {
+  Future<ReverseGeocodingWrapper> reverseGeocoding(latitude, longitude) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'lat': latitude,
-      r'limit': longitude
+      r'lng': longitude
     };
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch(_setStreamType<dynamic>(
-        Options(method: 'GET', headers: _headers, extra: _extra)
-            .compose(_dio.options,
-                'https://api-gtvtqs.eofactory.ai/api/reversegeocoding',
-                queryParameters: queryParameters, data: _data)
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = _result.data;
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<ReverseGeocodingWrapper>(
+            Options(method: 'GET', headers: _headers, extra: _extra)
+                .compose(_dio.options,
+                    'https://api-gtvtqs.eofactory.ai/api/reversegeocoding',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ReverseGeocodingWrapper.fromJson(_result.data!);
     return value;
   }
 

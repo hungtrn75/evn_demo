@@ -3,11 +3,26 @@ import 'package:collect_data/models/power_poles.dart';
 class AppVariable {
   AppVariable._();
 
+  static const String ROUTING_SOURCE = "routing_source";
+  static const String ROUTING_INNER_LINE_LAYER = "routing_inner_line_layer";
+  static const String ROUTING_OUTER_LINE_LAYER = "routing_outer_line_layer";
+  static const String ROUTING_SOURCE_CIRCLE_LAYER = "routing_source_circle_layer";
+  static const String ROUTING_INNER_DESTINATION_CIRCLE_LAYER = "routing_inner_destination_circle_layer";
+  static const String ROUTING_OUTER_DESTINATION_CIRCLE_LAYER = "routing_outer_destination_circle_layer";
+  static const String ROUTING_SYMBOL_LAYER = "routing_symbol_layer";
+
+  static const String ROUTING_NAVIGATION_SOURCE = "routing_navigation_source";
+  static const String ROUTING_NAVIGATION_ARROW_LAYER = "routing_navigation_arrow_layer";
+  static const String ROUTING_NAVIGATION_HEAD_ARROW_LAYER = "routing_navigation_head_arrow_layer";
+
   static const String MAP_SOURCE = "map_source";
   static const String MAP_SYMBOL_LAYER = "map_symbol_layer";
   static const String DEFINED_ICON = "defined_icon";
   static const String NON_DEFINED_ICON = "non_defined_icon";
+  static const String HEAD_ARROW = "head_arrow";
 
+
+  static const emptyFeatureCollection = {"type": "FeatureCollection", "features": []};
   static const featureCollection = {
     "type": "FeatureCollection",
     "features": [
