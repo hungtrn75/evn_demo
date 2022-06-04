@@ -81,3 +81,28 @@ extension BreakpointUtils on BoxConstraints {
   bool get isMobile => !isTablet && !isDesktop;
 }
 
+extension DurationUtils on Duration {
+  String formatDuration() {
+    var seconds = inSeconds;
+    final days = seconds ~/ Duration.secondsPerDay;
+    seconds -= days * Duration.secondsPerDay;
+    final hours = seconds ~/ Duration.secondsPerHour;
+    seconds -= hours * Duration.secondsPerHour;
+    final minutes = seconds ~/ Duration.secondsPerMinute;
+    seconds -= minutes * Duration.secondsPerMinute;
+
+    final List<String> tokens = [];
+    if (days != 0) {
+      tokens.add('${days} ngày');
+    }
+    if (tokens.isNotEmpty || hours != 0) {
+      tokens.add('${hours} giờ');
+    }
+    if (tokens.isNotEmpty || minutes != 0) {
+      tokens.add('${minutes} phút');
+    }
+    tokens.add('${seconds} giây');
+
+    return tokens.join(', ');
+  }
+}

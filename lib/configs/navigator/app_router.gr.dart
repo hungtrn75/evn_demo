@@ -18,8 +18,10 @@ class _$AppRouter extends RootStackRouter {
   @override
   final Map<String, PageFactory> pagesMap = {
     MapPageRoute.name: (routeData) {
+      final args = routeData.argsAs<MapPageRouteArgs>();
       return MaterialPageX<dynamic>(
-          routeData: routeData, child: const MapPage());
+          routeData: routeData,
+          child: MapPage(key: args.key, screenHeight: args.screenHeight));
     },
     HomePageRoute.name: (routeData) {
       return MaterialPageX<dynamic>(
@@ -46,10 +48,26 @@ class _$AppRouter extends RootStackRouter {
 
 /// generated route for
 /// [MapPage]
-class MapPageRoute extends PageRouteInfo<void> {
-  const MapPageRoute() : super(MapPageRoute.name, path: 'MapPage');
+class MapPageRoute extends PageRouteInfo<MapPageRouteArgs> {
+  MapPageRoute({Key? key, required double screenHeight})
+      : super(MapPageRoute.name,
+            path: 'MapPage',
+            args: MapPageRouteArgs(key: key, screenHeight: screenHeight));
 
   static const String name = 'MapPageRoute';
+}
+
+class MapPageRouteArgs {
+  const MapPageRouteArgs({this.key, required this.screenHeight});
+
+  final Key? key;
+
+  final double screenHeight;
+
+  @override
+  String toString() {
+    return 'MapPageRouteArgs{key: $key, screenHeight: $screenHeight}';
+  }
 }
 
 /// generated route for

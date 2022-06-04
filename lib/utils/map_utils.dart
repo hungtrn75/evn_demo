@@ -1,8 +1,9 @@
-import 'dart:math';
-
 import 'package:collect_data/models/routing.dart';
-import 'package:flutter/material.dart';
+import 'package:collect_data/utils/struct_utils.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
+
+import '../configs/constants/app_variables.dart';
+import 'tuft_utils.dart';
 
 LatLngBounds boundsFromLatLngList(List<LatLng> list) {
   double? x0, x1, y0, y1;
@@ -20,69 +21,66 @@ LatLngBounds boundsFromLatLngList(List<LatLng> list) {
   return LatLngBounds(northeast: LatLng(x1!, y1!), southwest: LatLng(x0!, y0!));
 }
 
-List<Map<String, dynamic>> turnArrowFeatures(StepInfo current, StepInfo next) {
-  final currentPointList =
-      (current.geometry as Map<String, dynamic>)["coordinates"] as List<dynamic>;
-  final nextPointList =
-      (next.geometry as Map<String, dynamic>)["coordinates"] as List<dynamic>;
+Pair<List<Map<String, dynamic>>, LatLngBounds> turnArrowFeatures(
+    StepInfo? current, StepInfo next) {
+  List<LatLng> coordinates = [];
+  List<LatLng> arrowLineCurrent = [];
+  List<LatLng> arrowCurrentSliced = [];
+  List<LatLng> arrowUpcomingSliced = [];
+  final arrowLineUpcoming =
+      ((next.geometry as Map<String, dynamic>)["coordinates"] as List<dynamic>)
+          .map((e) => LatLng(e[1], e[0]))
+          .toList();
 
-  final startIndex = max(currentPointList.length - 4, 0);
-  final endIndex = min(nextPointList.length, 4);
-  final last =
-      currentPointList.getRange(startIndex, currentPointList.length).toList();
-  final first = nextPointList.getRange(0, endIndex).toList();
+  if (current == null) {
+    arrowUpcomingSliced = TurfMisc.lineSliceAlongWithUnits(
+        arrowLineUpcoming, 0.0, 40, TurfConstants.UNIT_METERS);
+  } else {
+    final currentPointList = ((current.geometry
+            as Map<String, dynamic>)["coordinates"] as List<dynamic>)
+        .map((e) => LatLng(e[1], e[0]))
+        .toList();
+    arrowLineCurrent = currentPointList.reversed.toList();
 
-  final to = first.last as List<dynamic>;
-  final from = first[first.length - 2] as List<dynamic>;
-  debugPrint("111: $from, $to");
-  return [
+    arrowCurrentSliced = TurfMisc.lineSliceAlongWithUnits(
+        arrowLineCurrent, 0.0, 30, TurfConstants.UNIT_METERS);
+
+    arrowUpcomingSliced = TurfMisc.lineSliceAlongWithUnits(
+        arrowLineUpcoming, 0.0, 30, TurfConstants.UNIT_METERS);
+  }
+  coordinates = [...arrowCurrentSliced.reversed, ...arrowUpcomingSliced];
+
+  final featureCollection = [
     {
-      "id": 6,
+      "id": AppVariable.NAVIGATION_BODY_INNER_LAYER,
       "type": "Feature",
       "properties": {
-        "id": 6,
+        "id": AppVariable.NAVIGATION_BODY_INNER_LAYER,
       },
       "geometry": {
-        "coordinates": [
-          ...last,
-          ...first,
-        ],
+        "coordinates":
+            coordinates.map((e) => [e.longitude, e.latitude]).toList(),
         "type": "LineString"
       }
     },
     {
-      "id": 7,
+      "id": AppVariable.NAVIGATION_HEAD_ARROW_LAYER,
       "type": "Feature",
       "properties": {
-        "id": 7,
-        "bearing": 180 + bearing(
-          from[1],
-          from[0],
-          to[1],
-          to[0],
-        ),
+        "id": AppVariable.NAVIGATION_HEAD_ARROW_LAYER,
+        "bearing": TurfMeasurement.bearing(
+            coordinates.last, coordinates[coordinates.length - 2]),
       },
-      "geometry": {"type": "Point", "coordinates": first.last}
+      "geometry": {
+        "type": "Point",
+        "coordinates": [coordinates.last.longitude, coordinates.last.latitude]
+      }
     },
   ];
-}
+  final temp1 = TurfMisc.lineSliceAlongWithUnits(
+      arrowLineCurrent, 0.0, 80, TurfConstants.UNIT_METERS);
 
-double bearing(double lat1, double lon1, double lat2, double lon2) {
-  final fLon1 = toRad(lon1);
-  final fLon2 = toRad(lon2);
-  final fLat1 = toRad(lat1);
-  final fLat2 = toRad(lat2);
-
-  final a = sin(fLon2 - fLon1) * cos(fLat2);
-  final b = cos(fLat1) * sin(fLat2) - sin(fLat1) * cos(fLat2) * cos(fLon2 - fLon1);
-
-  return toDeg(atan2(a, b));
-}
-
-double toRad(double degree) {
-  return degree * pi / 180;
-}
-
-double toDeg(double radian) {
-  return radian * 180 / pi;
+  final temp2 = TurfMisc.lineSliceAlongWithUnits(
+      arrowLineUpcoming, 0.0, 80, TurfConstants.UNIT_METERS);
+  return Pair(featureCollection, boundsFromLatLngList([...temp1, ...temp2]));
 }

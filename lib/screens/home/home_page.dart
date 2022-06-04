@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:collect_data/configs/injector/di.dart';
 import 'package:collect_data/models/power_poles.dart';
 import 'package:collect_data/screens/home/display_page.dart';
+import 'package:collect_data/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -94,7 +95,7 @@ class _HomePageState extends State<HomePage> {
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.map),
           onPressed: (){
-            context.router.push(const MapPageRoute());
+            context.router.push(MapPageRoute(screenHeight: context.screenHeight));
           },
         ),
       ),

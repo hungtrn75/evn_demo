@@ -26,7 +26,7 @@ class PowerPoles extends HiveObject {
     this.longitude,
   });
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson(String? active) {
     final result = {
       "id": uuid,
       "type": "Feature",
@@ -34,9 +34,11 @@ class PowerPoles extends HiveObject {
         "uuid": uuid,
         "elevation": elevation,
         "property": property,
-        "defined": elevation != null
-            ? AppVariable.DEFINED_ICON
-            : AppVariable.NON_DEFINED_ICON,
+        "defined": uuid == active
+            ? AppVariable.PIN_ICON
+            : elevation != null
+                ? AppVariable.DEFINED_ICON
+                : AppVariable.NON_DEFINED_ICON,
       },
       "geometry": {
         "type": "Point",

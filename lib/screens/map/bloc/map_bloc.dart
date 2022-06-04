@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:collect_data/configs/injector/di.dart';
@@ -25,6 +23,9 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     if (event is MapRoutingEvent) {
       return _onRouting(event, emit);
     }
+    if (event is MapClearEvent) {
+      return _onClear(event, emit);
+    }
   }
 
   void _onRouting(MapRoutingEvent event, Emitter<MapState> emit) async {
@@ -39,5 +40,9 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       debugPrint("_onRoutingError: $e");
       emit(state.copyWith(error: error, loading: false));
     }
+  }
+
+  void _onClear(MapClearEvent event, Emitter<MapState> emit) async {
+    emit(MapState.init());
   }
 }

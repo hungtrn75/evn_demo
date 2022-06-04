@@ -13,3 +13,8 @@ class MapRoutingEvent extends MapEvent {
   @override
   List<Object?> get props => [source, destination];
 }
+
+class MapClearEvent extends MapEvent {
+  @override
+  List<Object?> get props => [];
+}
