@@ -2,15 +2,14 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:collect_data/configs/constants/app_url.dart';
 import 'package:collect_data/configs/constants/app_variables.dart';
 import 'package:collect_data/configs/injector/di.dart';
-import 'package:collect_data/configs/navigator/app_router.dart';
 import 'package:collect_data/models/power_poles.dart';
 import 'package:collect_data/screens/map/bloc/map_bloc.dart';
 import 'package:collect_data/screens/map/bloc/power_poles_detail_bloc.dart';
 import 'package:collect_data/screens/map/power_poles_bottomsheet.dart';
+import 'package:collect_data/utils/extensions.dart';
 import 'package:collect_data/utils/map_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -160,14 +159,14 @@ class _MapPageState extends State<MapPage> {
       AppVariable.ROUTING_INNER_LINE_LAYER,
       innerProps,
       belowLayerId: AppVariable.ROUTING_SOURCE_CIRCLE_LAYER,
-      filter: ['==', 'id', 1],
+      filter: ['==', 'id', AppVariable.ROUTING_INNER_LINE_LAYER],
     );
     await mapController?.addLineLayer(
       AppVariable.ROUTING_SOURCE,
       AppVariable.ROUTING_OUTER_LINE_LAYER,
       outerProps,
       belowLayerId: AppVariable.ROUTING_SOURCE_CIRCLE_LAYER,
-      filter: ['==', 'id', 2],
+      filter: ['==', 'id', AppVariable.ROUTING_INNER_LINE_LAYER],
     );
 
     const sourceProps = CircleLayerProperties(
@@ -181,7 +180,7 @@ class _MapPageState extends State<MapPage> {
       AppVariable.ROUTING_SOURCE,
       AppVariable.ROUTING_SOURCE_CIRCLE_LAYER,
       sourceProps,
-      filter: ['==', 'id', 3],
+      filter: ['==', 'id', AppVariable.ROUTING_SOURCE_CIRCLE_LAYER],
     );
 
     const innerDestinationProps = CircleLayerProperties(
@@ -192,7 +191,11 @@ class _MapPageState extends State<MapPage> {
         AppVariable.ROUTING_SOURCE,
         AppVariable.ROUTING_INNER_DESTINATION_CIRCLE_LAYER,
         innerDestinationProps,
-        filter: ['==', 'id', 4]);
+        filter: [
+          '==',
+          'id',
+          AppVariable.ROUTING_OUTER_DESTINATION_CIRCLE_LAYER
+        ]);
 
     const outerDestinationProps = CircleLayerProperties(
       circleRadius: 5,
@@ -205,12 +208,12 @@ class _MapPageState extends State<MapPage> {
       AppVariable.ROUTING_OUTER_DESTINATION_CIRCLE_LAYER,
       outerDestinationProps,
       belowLayerId: AppVariable.ROUTING_INNER_DESTINATION_CIRCLE_LAYER,
-      filter: ['==', 'id', 5],
+      filter: ['==', 'id', AppVariable.ROUTING_OUTER_DESTINATION_CIRCLE_LAYER],
     );
 
     /** NAVIGATION **/
     await mapController?.addSource(
-      AppVariable.ROUTING_NAVIGATION_SOURCE,
+      AppVariable.NAVIGATION_SOURCE,
       const GeojsonSourceProperties(
         data: AppVariable.emptyFeatureCollection,
       ),
@@ -228,32 +231,47 @@ class _MapPageState extends State<MapPage> {
       lineColor: "#ffffff",
       lineJoin: "round",
     );
-    await mapController?.addLineLayer(
-      AppVariable.ROUTING_NAVIGATION_SOURCE,
-      AppVariable.ROUTING_NAVIGATION_ARROW_LAYER,
-      bodyArrowProps,
+    const bodyArrowOuterProps = LineLayerProperties(
+      lineWidth: 2.0,
+      lineJoin: "round",
+      lineGapWidth: [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        12,
+        2,
+        16,
+        9
+      ],
+      lineColor: "#000000",
     );
+    await mapController?.addLineLayer(AppVariable.NAVIGATION_SOURCE,
+        AppVariable.NAVIGATION_BODY_INNER_LAYER, bodyArrowProps,
+        filter: ["==", "id", AppVariable.NAVIGATION_BODY_INNER_LAYER]);
+    await mapController?.addLineLayer(AppVariable.NAVIGATION_SOURCE,
+        AppVariable.NAVIGATION_BODY_OUTER_LAYER, bodyArrowOuterProps,
+        belowLayerId: AppVariable.NAVIGATION_BODY_INNER_LAYER,
+        filter: ["==", "id", AppVariable.NAVIGATION_BODY_INNER_LAYER]);
 
     await mapController?.addSymbolLayer(
-      AppVariable.ROUTING_NAVIGATION_SOURCE,
-      AppVariable.ROUTING_NAVIGATION_HEAD_ARROW_LAYER,
-      const SymbolLayerProperties(
-        iconRotate: ["get", "bearing"],
-        iconImage: AppVariable.HEAD_ARROW,
-        iconSize: [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          8,
-          0.1,
-          17,
-          1
-        ],
-        iconAllowOverlap: true,
-        iconRotationAlignment: "map",
-      ),
-      filter: ['==', 'id', 7],
-    );
+        AppVariable.NAVIGATION_SOURCE,
+        AppVariable.NAVIGATION_HEAD_ARROW_LAYER,
+        const SymbolLayerProperties(
+          iconRotate: ["get", "bearing"],
+          iconImage: AppVariable.HEAD_ARROW,
+          iconSize: [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            8,
+            0.1,
+            17,
+            1
+          ],
+          iconAllowOverlap: true,
+          iconRotationAlignment: "map",
+        ),
+        filter: ["==", "id", AppVariable.NAVIGATION_HEAD_ARROW_LAYER]);
   }
 
   void _observerMapState(MapState state) async {
@@ -272,26 +290,18 @@ class _MapPageState extends State<MapPage> {
         "type": "FeatureCollection",
         "features": [
           {
-            "id": 1,
+            "id": AppVariable.ROUTING_INNER_LINE_LAYER,
             "properties": {
-              'id': 1,
+              'id': AppVariable.ROUTING_INNER_LINE_LAYER,
             },
             "type": "Feature",
             "geometry": geometry
           },
           {
-            "id": 2,
-            "properties": {
-              'id': 2,
-            },
-            "type": "Feature",
-            "geometry": geometry
-          },
-          {
-            "id": 3,
+            "id": AppVariable.ROUTING_SOURCE_CIRCLE_LAYER,
             "type": "Feature",
             "properties": {
-              'id': 3,
+              'id': AppVariable.ROUTING_SOURCE_CIRCLE_LAYER,
             },
             "geometry": {
               "type": "Point",
@@ -302,24 +312,10 @@ class _MapPageState extends State<MapPage> {
             }
           },
           {
-            "id": 4,
+            "id": AppVariable.ROUTING_OUTER_DESTINATION_CIRCLE_LAYER,
             "type": "Feature",
             "properties": {
-              'id': 4,
-            },
-            "geometry": {
-              "type": "Point",
-              "coordinates": [
-                transformGeometry.last.longitude,
-                transformGeometry.last.latitude
-              ]
-            }
-          },
-          {
-            "id": 5,
-            "type": "Feature",
-            "properties": {
-              'id': 5,
+              'id': AppVariable.ROUTING_OUTER_DESTINATION_CIRCLE_LAYER,
             },
             "geometry": {
               "type": "Point",
@@ -382,8 +378,8 @@ class _MapPageState extends State<MapPage> {
     final result = turnArrowFeatures(
         directionInfo.routes![0].legs![0].steps![1],
         directionInfo.routes![0].legs![0].steps![2]);
-    debugPrint("1234: ${json.encode(result[1])}");
-    mapController?.setGeoJsonSource(AppVariable.ROUTING_NAVIGATION_SOURCE,
+    debugPrint("1234: ${json.encode(result[0])}");
+    mapController?.setGeoJsonSource(AppVariable.NAVIGATION_SOURCE,
         {"type": "FeatureCollection", "features": result});
   }
 
@@ -391,6 +387,7 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
+        alignment: Alignment.bottomCenter,
         children: [
           BlocListener<MapBloc, MapState>(
             listenWhen: (previous, current) =>
@@ -467,7 +464,39 @@ class _MapPageState extends State<MapPage> {
                 ],
               ),
             ),
-          )
+          ),
+          BlocBuilder<MapBloc, MapState>(builder: (_, state) {
+            if (state.directionInfo == null) {
+              return const SizedBox();
+            }
+            final leg = state.directionInfo!.routes![0].legs![0];
+
+            return Card(
+              margin: EdgeInsets.zero,
+              child: Container(
+                width: context.screenWidth,
+                height: context.screenHeight / 2,
+                color: Colors.white,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        text:
+                            '${Duration(seconds: leg.duration!.toInt()).formatDuration()} ',
+                        style: context.textTheme.titleMedium,
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: '(${leg.distance!} mét)',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            );
+          }),
         ],
       ),
     );

@@ -11,9 +11,10 @@ class AppVariable {
   static const String ROUTING_OUTER_DESTINATION_CIRCLE_LAYER = "routing_outer_destination_circle_layer";
   static const String ROUTING_SYMBOL_LAYER = "routing_symbol_layer";
 
-  static const String ROUTING_NAVIGATION_SOURCE = "routing_navigation_source";
-  static const String ROUTING_NAVIGATION_ARROW_LAYER = "routing_navigation_arrow_layer";
-  static const String ROUTING_NAVIGATION_HEAD_ARROW_LAYER = "routing_navigation_head_arrow_layer";
+  static const String NAVIGATION_SOURCE = "navigation_source";
+  static const String NAVIGATION_BODY_INNER_LAYER = "navigation_inner_body_layer";
+  static const String NAVIGATION_BODY_OUTER_LAYER = "navigation_outer_body_layer";
+  static const String NAVIGATION_HEAD_ARROW_LAYER = "navigation_head_arrow_layer";
 
   static const String MAP_SOURCE = "map_source";
   static const String MAP_SYMBOL_LAYER = "map_symbol_layer";
