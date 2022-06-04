@@ -29,7 +29,6 @@ class PowerPolesBottomSheet extends StatefulWidget {
 
 class _PowerPolesBottomSheetState extends State<PowerPolesBottomSheet> {
   final Box<PowerPoles> powerPolesBox = DI.resolve();
-  int i = 0;
 
   @override
   void initState() {
@@ -132,12 +131,11 @@ class _PowerPolesBottomSheetState extends State<PowerPolesBottomSheet> {
                     child: Text(
                         '${selected.elevation != null ? "Chỉnh sửa" : "Thêm mới"} thông tin'),
                     onPressed: () {
-                      Navigator.pop(context);
                       context.router.push(const FormPageRoute());
                     },
                   ),
                   ElevatedButton(
-                    child: Text('Chỉ đường $i'),
+                    child: Text('Chỉ đường'),
                     onPressed: (){
                       Navigator.pop(context);
                       widget.onRouting(widget.latLng);
