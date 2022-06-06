@@ -23,7 +23,7 @@ class _FormPageState extends State<FormPage> {
       widget.powerPoles.elevation = _formKey.currentState!.value["elevation"];
       widget.powerPoles.property = _formKey.currentState!.value["property"];
       widget.powerPoles.save();
-      context.router.navigateBack();
+      context.router.pop(true);
     }
   }
 

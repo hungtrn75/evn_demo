@@ -1,3 +1,4 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:collect_data/configs/injector/di.dart';
@@ -130,16 +131,33 @@ class _PowerPolesBottomSheetState extends State<PowerPolesBottomSheet> {
                   ElevatedButton(
                     child: Text(
                         '${selected.elevation != null ? "Chỉnh sửa" : "Thêm mới"} thông tin'),
-                    onPressed: () {
-                      context.router.push(FormPageRoute(powerPoles: selected));
+                    onPressed: () async {
+                      final result = await context.router
+                          .push(FormPageRoute(powerPoles: selected));
+                      if (result == true) {
+                        Flushbar(
+                          message:
+                              "Chỉnh sửa thông tin cho #${selected.uuid} thành công",
+                          icon: const Icon(
+                            Icons.info_outline,
+                            size: 28.0,
+                            color: Colors.white,
+                          ),
+                          duration: const Duration(seconds: 3),
+                          flushbarPosition: FlushbarPosition.TOP,
+                          flushbarStyle: FlushbarStyle.GROUNDED,
+                          backgroundColor: Colors.green[800]!,
+                        ).show(context);
+                      }
                     },
                   ),
                   ElevatedButton(
-                    child: Text('Chỉ đường'),
-                    onPressed: (){
+                    child: const Text('Chỉ đường'),
+                    onPressed: () {
                       Navigator.pop(context);
                       widget.onRouting(widget.latLng);
                     },
+                    style: ElevatedButton.styleFrom(primary: Colors.orange),
                   )
                 ],
               )
