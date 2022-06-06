@@ -80,6 +80,7 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
     if (featureId is String && featureId.contains("-") && !hasDirection) {
       active = featureId;
       setMapGeoJsonSource();
+      mapController?.animateCamera(CameraUpdate.newLatLng(latLng));
       showModalBottomSheet<void>(
         context: context,
         builder: (BuildContext context) {
@@ -489,6 +490,9 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Bản đồ"),
+      ),
       body: Stack(
         alignment: Alignment.bottomCenter,
         children: [

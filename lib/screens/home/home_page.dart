@@ -56,8 +56,9 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Danh sách cột hạ thế"),
-          bottom: const TabBar(
-            tabs: [
+          bottom: TabBar(
+            labelStyle: context.labelLarge,
+            tabs: const [
               Tab(
                 text: "Đã xác định vị trí",
               ),

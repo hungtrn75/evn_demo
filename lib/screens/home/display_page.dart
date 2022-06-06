@@ -64,7 +64,7 @@ class _DisplayPageState extends State<DisplayPage> {
             },
             trailing: widget.type == 2
                 ? const Icon(
-                    Icons.tips_and_updates,
+                    Icons.info_outline,
                     color: Colors.blue,
                   )
                 : item.elevation == null

@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:another_flushbar/flushbar.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:collect_data/configs/constants/app_url.dart';
 import 'package:collect_data/models/power_poles.dart';
@@ -10,6 +9,7 @@ import 'package:collect_data/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 
 import '../../configs/constants/app_variables.dart';
@@ -32,6 +32,8 @@ class MapCollectPage extends StatefulWidget implements AutoRouteWrapper {
 }
 
 class _MapCollectPageState extends State<MapCollectPage> {
+  final GeolocatorPlatform _geolocatorPlatform = GeolocatorPlatform.instance;
+
   MapboxMapController? mapController;
   String styleString = AppUrl.vectorTileUrl;
   Symbol? active;
@@ -72,7 +74,7 @@ class _MapCollectPageState extends State<MapCollectPage> {
   }
 
   void _onUpdate() {
-    if(activeLatLng!=null) {
+    if (activeLatLng != null) {
       widget.powerPoles.latitude = activeLatLng!.latitude;
       widget.powerPoles.longitude = activeLatLng!.longitude;
       widget.powerPoles.save();
@@ -80,9 +82,28 @@ class _MapCollectPageState extends State<MapCollectPage> {
     }
   }
 
+  void _changeLayer() {
+    setState(() {
+      styleString = styleString == AppUrl.vectorTileUrl
+          ? MapboxStyles.SATELLITE_STREETS
+          : AppUrl.vectorTileUrl;
+    });
+  }
+
+  void _pickLocationAs() async {
+    final position = await _geolocatorPlatform.getCurrentPosition();
+    final latLng = LatLng(position.latitude, position.longitude);
+    _onMapClick(
+        const Point(0, 0), latLng);
+    mapController?.animateCamera(CameraUpdate.newLatLng(latLng));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Cập nhật vị trí"),
+      ),
       body: Stack(
         alignment: Alignment.bottomCenter,
         children: [
@@ -96,11 +117,45 @@ class _MapCollectPageState extends State<MapCollectPage> {
             compassEnabled: true,
             onMapClick: _onMapClick,
             onStyleLoadedCallback: _onStyleLoaded,
+            logoViewMargins: const Point(0, -150),
+            attributionButtonMargins: const Point(0, -150),
           ),
-          if (activeLatLng != null)
-            Card(
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: EdgeInsets.only(
+                  bottom: activeLatLng != null ? 240 : 15.0, right: 5),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FloatingActionButton(
+                    heroTag: "_changeLayer",
+                    backgroundColor: Colors.white,
+                    mini: true,
+                    onPressed: _changeLayer,
+                    child: const Icon(
+                      Icons.layers,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  FloatingActionButton(
+                    heroTag: "_goToBound",
+                    onPressed: _pickLocationAs,
+                    child: const Icon(Icons.my_location),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          AnimatedOpacity(
+            opacity: activeLatLng != null ? 1 : 0,
+            duration: const Duration(milliseconds: 500),
+            child: Card(
               child: Container(
-                width: context.screenWidth - 30,
+                width: context.screenWidth - 15,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   color: Colors.white,
@@ -156,7 +211,9 @@ class _MapCollectPageState extends State<MapCollectPage> {
                       },
                       bloc: BlocProvider.of<PowerPolesDetailBloc>(context),
                     ),
-                    const SizedBox(height: 20,),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     SizedBox(
                       width: double.infinity,
                       height: 46,
@@ -172,7 +229,8 @@ class _MapCollectPageState extends State<MapCollectPage> {
                   ],
                 ),
               ),
-            )
+            ),
+          )
         ],
       ),
     );

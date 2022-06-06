@@ -34,13 +34,11 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp.router(
       title: 'Flutter Demo',
       theme: ThemeData(
+          useMaterial3: true,
           primarySwatch: Colors.blue,
           textTheme: GoogleFonts.montserratTextTheme(textTheme).copyWith(
             overline: GoogleFonts.dancingScript(
               textStyle: textTheme.overline,
-            ),
-            headline6: GoogleFonts.raleway(
-              textStyle: textTheme.headline6,
             ),
           )),
       routerDelegate: router.delegate(initialRoutes: [const SplashPageRoute()]),
