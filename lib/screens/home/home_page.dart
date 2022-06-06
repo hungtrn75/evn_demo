@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
           bottom: const TabBar(
             tabs: [
               Tab(
-                text: "Đã xác định",
+                text: "Đã xác định vị trí",
               ),
               Tab(
                 text: "Chưa xác định",

@@ -21,8 +21,10 @@ import 'package:mapbox_gl/mapbox_gl.dart';
 
 class MapPage extends StatefulWidget implements AutoRouteWrapper {
   final double screenHeight;
+  final String? active;
 
-  const MapPage({Key? key, required this.screenHeight}) : super(key: key);
+  const MapPage({Key? key, required this.screenHeight, this.active})
+      : super(key: key);
 
   @override
   State<MapPage> createState() => _MapPageState();
@@ -39,18 +41,9 @@ class MapPage extends StatefulWidget implements AutoRouteWrapper {
 class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
   final GeolocatorPlatform _geolocatorPlatform = GeolocatorPlatform.instance;
 
-  late final AnimationController _animationController = AnimationController(
-    duration: const Duration(milliseconds: 500),
-    vsync: this,
-  );
+  late final AnimationController _animationController;
 
-  late final Animation<double> _offsetAnimation = Tween<double>(
-    begin: 0,
-    end: widget.screenHeight / 2 - 110,
-  ).animate(CurvedAnimation(
-    parent: _animationController,
-    curve: Curves.ease,
-  ));
+  late final Animation<double> _offsetAnimation;
 
   MapboxMapController? mapController;
   final Box<PowerPoles> powerPolesBox = DI.resolve();
@@ -59,6 +52,22 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
   String styleString = AppUrl.vectorTileUrl;
 
   String? active;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _offsetAnimation = Tween<double>(
+      begin: 0,
+      end: widget.screenHeight / 2 - 110,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.ease,
+    ));
+  }
 
   void _onMapCreated(MapboxMapController controller) async {
     mapController = controller;
@@ -98,10 +107,13 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
   }
 
   void setMapGeoJsonSource() async {
-    final definedPowerPolesList = powerPolesBox.values
-        .where((powerPoles) =>
-            powerPoles.longitude != null && powerPoles.latitude != null)
-        .toList();
+    var definedPowerPolesIterable = powerPolesBox.values.where((powerPoles) =>
+        powerPoles.longitude != null && powerPoles.latitude != null);
+    if (widget.active != null) {
+      definedPowerPolesIterable = definedPowerPolesIterable
+          .where((element) => element.uuid == widget.active);
+    }
+    final definedPowerPolesList = definedPowerPolesIterable.toList();
     final geoSourceData =
         AppVariable.listToGeoJson(definedPowerPolesList, active: active);
 
@@ -389,11 +401,16 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
   }
 
   void _goToBound() async {
-    final definedPowerPolesList = powerPolesBox.values
-        .where((powerPoles) =>
-            powerPoles.longitude != null && powerPoles.latitude != null)
+    var definedPowerPolesIterable = powerPolesBox.values.where((powerPoles) =>
+        powerPoles.longitude != null && powerPoles.latitude != null);
+    if (widget.active != null) {
+      definedPowerPolesIterable = definedPowerPolesIterable
+          .where((element) => element.uuid == widget.active);
+    }
+    final definedPowerPolesList = definedPowerPolesIterable
         .map((e) => LatLng(e.latitude!, e.longitude!))
         .toList();
+
     mapController?.animateCamera(CameraUpdate.newLatLngBounds(
       boundsFromLatLngList(definedPowerPolesList),
       left: 50,
@@ -657,8 +674,8 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
 
   @override
   void dispose() {
-    mapController?.onFeatureTapped.remove(onFeatureTap);
     _animationController.dispose();
+    mapController?.onFeatureTapped.remove(onFeatureTap);
     powerPolesBox.listenable().removeListener(setMapGeoJsonSource);
     super.dispose();
   }

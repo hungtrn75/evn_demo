@@ -131,7 +131,7 @@ class _PowerPolesBottomSheetState extends State<PowerPolesBottomSheet> {
                     child: Text(
                         '${selected.elevation != null ? "Chỉnh sửa" : "Thêm mới"} thông tin'),
                     onPressed: () {
-                      context.router.push(const FormPageRoute());
+                      context.router.push(FormPageRoute(powerPoles: selected));
                     },
                   ),
                   ElevatedButton(

@@ -1,11 +1,13 @@
 import 'package:collect_data/configs/bloc/delegate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:form_builder_validators/localization/l10n.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'configs/injector/di.dart';
 import 'configs/navigator/app_router.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 void main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +45,16 @@ class _MyAppState extends State<MyApp> {
           )),
       routerDelegate: router.delegate(initialRoutes: [const SplashPageRoute()]),
       routeInformationParser: router.defaultRouteParser(),
+      localizationsDelegates: const [
+        FormBuilderLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('vi'),
+      ],
     );
   }
 }
