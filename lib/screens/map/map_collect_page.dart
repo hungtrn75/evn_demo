@@ -2,7 +2,9 @@ import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:collect_data/configs/constants/app_url.dart';
+import 'package:collect_data/configs/navigator/app_router.dart';
 import 'package:collect_data/models/power_poles.dart';
+import 'package:collect_data/models/reverse_geocoding.dart';
 import 'package:collect_data/screens/map/bloc/power_poles_detail_bloc.dart';
 import 'package:collect_data/utils/collection_utils.dart';
 import 'package:collect_data/utils/extensions.dart';
@@ -62,9 +64,11 @@ class _MapCollectPageState extends State<MapCollectPage> {
     setState(() {
       activeLatLng = latLng;
     });
-    BlocProvider.of<PowerPolesDetailBloc>(context).add(
-        PowerPolesDetailReverseGeocodingEvent(
-            latitude: latLng.latitude, longitude: latLng.longitude));
+    if (point.x != -999) {
+      BlocProvider.of<PowerPolesDetailBloc>(context).add(
+          PowerPolesDetailReverseGeocodingEvent(
+              latitude: latLng.latitude, longitude: latLng.longitude));
+    }
   }
 
   void _onStyleLoaded() async {
@@ -93,17 +97,42 @@ class _MapCollectPageState extends State<MapCollectPage> {
   void _pickLocationAs() async {
     final position = await _geolocatorPlatform.getCurrentPosition();
     final latLng = LatLng(position.latitude, position.longitude);
-    _onMapClick(
-        const Point(0, 0), latLng);
+    _onMapClick(const Point(0, 0), latLng);
     mapController?.animateCamera(CameraUpdate.newLatLng(latLng));
+  }
+
+  void _goToSearch() async {
+    final result = await context.router.push(const GeocodingPageRoute());
+    if (result is ReverseGeocoding) {
+      final coordinates = result.center["coordinates"] as List<dynamic>;
+      final center = LatLng(coordinates[1], coordinates[0]);
+      mapController?.animateCamera(CameraUpdate.newLatLng(center));
+      _onMapClick(
+          const Point(-999, -999), center);
+      BlocProvider.of<PowerPolesDetailBloc>(context)
+          .add(PowerPolesUpdateFromGeocodingEvent(result));
+    }
+  }
+
+  void _onClear() async {
+    if(active != null) {
+      await mapController?.removeSymbol(active!);
+      active = null;
+    }
+    activeLatLng = null;
+    BlocProvider.of<PowerPolesDetailBloc>(context)
+        .add(const PowerPolesClearEvent());
+    setState(() {
+
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Cập nhật vị trí"),
-      ),
+      // appBar: AppBar(
+      //   title: const Text("Cập nhật vị trí"),
+      // ),
       body: Stack(
         alignment: Alignment.bottomCenter,
         children: [
@@ -119,6 +148,60 @@ class _MapCollectPageState extends State<MapCollectPage> {
             onStyleLoadedCallback: _onStyleLoaded,
             logoViewMargins: const Point(0, -150),
             attributionButtonMargins: const Point(0, -150),
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: context.viewPadding.top + 15,
+              ),
+              child: GestureDetector(
+                onTap: _goToSearch,
+                child: Card(
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25.0),
+                  ),
+                  child: Container(
+                    height: 50,
+                    width: context.screenWidth - 20,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                      color: Colors.white,
+                    ),
+                    child: Row(
+                      children: [
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        const Icon(Icons.search),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: BlocBuilder<PowerPolesDetailBloc,
+                              PowerPolesDetailState>(
+                            builder: (_, state) {
+                              return Text(
+                                state.reverseGeocoding?.name ?? "Tìm kiếm...",
+                                style: context.textTheme.bodyMedium,
+                              );
+                            },
+                            bloc:
+                                BlocProvider.of<PowerPolesDetailBloc>(context),
+                            buildWhen: (prev, current) =>
+                                prev.reverseGeocoding !=
+                                current.reverseGeocoding,
+                          ),
+
+                        ),
+                        IconButton(onPressed: _onClear, icon: const Icon(Icons.close))
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
           Align(
             alignment: Alignment.bottomRight,

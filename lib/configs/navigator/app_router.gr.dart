@@ -45,6 +45,14 @@ class _$AppRouter extends RootStackRouter {
       return MaterialPageX<dynamic>(
           routeData: routeData,
           child: MapCollectPage(key: args.key, powerPoles: args.powerPoles));
+    },
+    GeocodingPageRoute.name: (routeData) {
+      return CustomPage<dynamic>(
+          routeData: routeData,
+          child: const GeocodingPage(),
+          transitionsBuilder: TransitionsBuilders.fadeIn,
+          opaque: true,
+          barrierDismissible: false);
     }
   };
 
@@ -54,7 +62,8 @@ class _$AppRouter extends RootStackRouter {
         RouteConfig(HomePageRoute.name, path: 'HomePage'),
         RouteConfig(SplashPageRoute.name, path: 'SplashScreen'),
         RouteConfig(FormPageRoute.name, path: 'FormPage'),
-        RouteConfig(MapCollectPageRoute.name, path: 'MapCollectPage')
+        RouteConfig(MapCollectPageRoute.name, path: 'MapCollectPage'),
+        RouteConfig(GeocodingPageRoute.name, path: 'GeocodingPage')
       ];
 }
 
@@ -147,4 +156,13 @@ class MapCollectPageRouteArgs {
   String toString() {
     return 'MapCollectPageRouteArgs{key: $key, powerPoles: $powerPoles}';
   }
+}
+
+/// generated route for
+/// [GeocodingPage]
+class GeocodingPageRoute extends PageRouteInfo<void> {
+  const GeocodingPageRoute()
+      : super(GeocodingPageRoute.name, path: 'GeocodingPage');
+
+  static const String name = 'GeocodingPageRoute';
 }

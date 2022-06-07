@@ -6,4 +6,5 @@ class RouteName {
   static const String mapPage = 'MapPage';
   static const String mapCollectPage = 'MapCollectPage';
   static const String formPage = 'FormPage';
+  static const String geocodingPage = 'GeocodingPage';
 }

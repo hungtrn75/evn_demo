@@ -30,6 +30,12 @@ class PowerPolesDetailBloc
     if (event is PowerPolesDetailReverseGeocodingEvent) {
       return _onReverseGeocoding(event, emit);
     }
+    if (event is PowerPolesUpdateFromGeocodingEvent) {
+      return _onUpdateFromGeometry(event, emit);
+    }
+    if (event is PowerPolesClearEvent) {
+      return _onClear(emit);
+    }
   }
 
   void _onReverseGeocoding(PowerPolesDetailReverseGeocodingEvent event,
@@ -45,5 +51,14 @@ class PowerPolesDetailBloc
       final error = DioUtils.handleNormalError(e);
       emit(PowerPolesDetailState.error(error));
     }
+  }
+
+  void _onUpdateFromGeometry(PowerPolesUpdateFromGeocodingEvent event,
+      Emitter<PowerPolesDetailState> emit) async {
+    emit(state.copyWith(reverseGeocoding: event.geocoding));
+  }
+
+  void _onClear(Emitter<PowerPolesDetailState> emit) async {
+    emit(PowerPolesDetailState.init());
   }
 }

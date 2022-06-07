@@ -20,7 +20,7 @@ abstract class RestClient {
   );
 
   @GET(AppUrl.geocodeUrl)
-  Future<dynamic> geocoding(
+  Future<List<ReverseGeocoding>> geocoding(
     @Query("search") String search,
     @Query("limit") int limit,
   );

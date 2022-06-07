@@ -50,7 +50,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<dynamic> geocoding(search, limit) async {
+  Future<List<ReverseGeocoding>> geocoding(search, limit) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'search': search,
@@ -58,13 +58,17 @@ class _RestClient implements RestClient {
     };
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch(_setStreamType<dynamic>(Options(
-            method: 'GET', headers: _headers, extra: _extra)
-        .compose(
-            _dio.options, 'https://api-gtvtqs.eofactory.ai/api/autocomplete',
-            queryParameters: queryParameters, data: _data)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = _result.data;
+    final _result = await _dio.fetch<List<dynamic>>(
+        _setStreamType<List<ReverseGeocoding>>(
+            Options(method: 'GET', headers: _headers, extra: _extra)
+                .compose(_dio.options,
+                    'https://api-gtvtqs.eofactory.ai/api/autocomplete',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    var value = _result.data!
+        .map(
+            (dynamic i) => ReverseGeocoding.fromJson(i as Map<String, dynamic>))
+        .toList();
     return value;
   }
 

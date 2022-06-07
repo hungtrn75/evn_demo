@@ -462,6 +462,7 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
           bottom: 100,
         ));
       });
+
       mapController?.animateCamera(CameraUpdate.newLatLngBounds(
         bounds,
         left: 15,
