@@ -344,7 +344,7 @@ class __$$_ReverseGeocodingCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_ReverseGeocoding implements _ReverseGeocoding {
+class _$_ReverseGeocoding extends _ReverseGeocoding {
   const _$_ReverseGeocoding(
       {this.id,
       this.name,
@@ -353,7 +353,8 @@ class _$_ReverseGeocoding implements _ReverseGeocoding {
       @JsonKey(name: 'district_name') this.districtName,
       @JsonKey(name: 'commune_name') this.communeName,
       this.center,
-      this.geometry});
+      this.geometry})
+      : super._();
 
   factory _$_ReverseGeocoding.fromJson(Map<String, dynamic> json) =>
       _$$_ReverseGeocodingFromJson(json);
@@ -427,7 +428,7 @@ class _$_ReverseGeocoding implements _ReverseGeocoding {
   }
 }
 
-abstract class _ReverseGeocoding implements ReverseGeocoding {
+abstract class _ReverseGeocoding extends ReverseGeocoding {
   const factory _ReverseGeocoding(
       {final String? id,
       final String? name,
@@ -437,6 +438,7 @@ abstract class _ReverseGeocoding implements ReverseGeocoding {
       @JsonKey(name: 'commune_name') final String? communeName,
       final dynamic? center,
       final dynamic? geometry}) = _$_ReverseGeocoding;
+  const _ReverseGeocoding._() : super._();
 
   factory _ReverseGeocoding.fromJson(Map<String, dynamic> json) =
       _$_ReverseGeocoding.fromJson;

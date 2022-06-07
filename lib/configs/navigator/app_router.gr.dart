@@ -47,9 +47,10 @@ class _$AppRouter extends RootStackRouter {
           child: MapCollectPage(key: args.key, powerPoles: args.powerPoles));
     },
     GeocodingPageRoute.name: (routeData) {
+      final args = routeData.argsAs<GeocodingPageRouteArgs>();
       return CustomPage<dynamic>(
           routeData: routeData,
-          child: const GeocodingPage(),
+          child: GeocodingPage(key: args.key, search: args.search),
           transitionsBuilder: TransitionsBuilders.fadeIn,
           opaque: true,
           barrierDismissible: false);
@@ -160,9 +161,24 @@ class MapCollectPageRouteArgs {
 
 /// generated route for
 /// [GeocodingPage]
-class GeocodingPageRoute extends PageRouteInfo<void> {
-  const GeocodingPageRoute()
-      : super(GeocodingPageRoute.name, path: 'GeocodingPage');
+class GeocodingPageRoute extends PageRouteInfo<GeocodingPageRouteArgs> {
+  GeocodingPageRoute({Key? key, required String search})
+      : super(GeocodingPageRoute.name,
+            path: 'GeocodingPage',
+            args: GeocodingPageRouteArgs(key: key, search: search));
 
   static const String name = 'GeocodingPageRoute';
+}
+
+class GeocodingPageRouteArgs {
+  const GeocodingPageRouteArgs({this.key, required this.search});
+
+  final Key? key;
+
+  final String search;
+
+  @override
+  String toString() {
+    return 'GeocodingPageRouteArgs{key: $key, search: $search}';
+  }
 }

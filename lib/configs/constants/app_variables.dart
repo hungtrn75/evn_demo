@@ -16,6 +16,12 @@ class AppVariable {
   static const String NAVIGATION_BODY_OUTER_LAYER = "navigation_outer_body_layer";
   static const String NAVIGATION_HEAD_ARROW_LAYER = "navigation_head_arrow_layer";
 
+  static const String GEOCODING_SOURCE = "geocoding_source";
+  static const String GEOCODING_SYMBOL_LAYER = "geocoding_symbol_layer";
+  static const String GEOCODING_LINE_LAYER = "geocoding_line_layer";
+  static const String GEOCODING_OUTER_LINE_LAYER = "geocoding_outer_line_layer";
+  static const String GEOCODING_FILL_LAYER = "geocoding_fill_layer";
+
   static const String MAP_SOURCE = "map_source";
   static const String MAP_SYMBOL_LAYER = "map_symbol_layer";
   static const String PIN_ICON = "pin_icon";

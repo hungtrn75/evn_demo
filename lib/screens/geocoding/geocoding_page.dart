@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class GeocodingPage extends StatefulWidget implements AutoRouteWrapper {
-  const GeocodingPage({Key? key}) : super(key: key);
+  final String search;
+
+  const GeocodingPage({Key? key, required this.search}) : super(key: key);
 
   @override
   State<GeocodingPage> createState() => _GeocodingPageState();
@@ -21,6 +23,17 @@ class GeocodingPage extends StatefulWidget implements AutoRouteWrapper {
 }
 
 class _GeocodingPageState extends State<GeocodingPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      if (widget.search.isNotEmpty) {
+        BlocProvider.of<GeocodingBloc>(context)
+            .add(GeocodingSearchEvent(widget.search));
+      }
+    });
+  }
+
   void _onFieldSubmitted(String q) {
     BlocProvider.of<GeocodingBloc>(context).add(GeocodingSearchEvent(q));
   }
@@ -49,6 +62,7 @@ class _GeocodingPageState extends State<GeocodingPage> {
                       onPressed: () {}, icon: const Icon(Icons.arrow_back_ios)),
                   Expanded(
                     child: TextFormField(
+                      initialValue: widget.search,
                       decoration: InputDecoration(
                         hintText: "Tìm kiếm...",
                         hintStyle: context.textTheme.bodyMedium,

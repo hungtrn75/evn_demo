@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:collect_data/configs/constants/app_colors.dart';
 import 'package:collect_data/configs/constants/app_url.dart';
 import 'package:collect_data/configs/constants/app_variables.dart';
 import 'package:collect_data/configs/injector/di.dart';
@@ -182,7 +183,8 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
         9
       ],
       lineJoin: "round",
-      lineColor: "#4da479",
+      lineColor: AppColors.innerLineColor,
+      lineOpacity: 0.7,
     );
     const outerProps = LineLayerProperties(
       lineWidth: 2.0,
@@ -196,7 +198,8 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
         16,
         9
       ],
-      lineColor: "#00725b",
+      lineColor: AppColors.outerLineColor,
+      lineOpacity: 0.7
     );
 
     await mapController?.addLineLayer(

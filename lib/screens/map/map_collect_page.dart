@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:collect_data/configs/constants/app_colors.dart';
 import 'package:collect_data/configs/constants/app_url.dart';
 import 'package:collect_data/configs/navigator/app_router.dart';
 import 'package:collect_data/models/power_poles.dart';
@@ -47,34 +48,93 @@ class _MapCollectPageState extends State<MapCollectPage> {
   }
 
   void _onMapClick(Point<double> point, LatLng latLng) async {
-    if (active != null) {
-      mapController?.updateSymbol(
-        active!,
-        SymbolOptions(geometry: latLng),
-      );
-    } else {
-      active = await mapController?.addSymbol(
-        SymbolOptions(
-            geometry: latLng,
-            iconImage: AppVariable.PIN_ICON,
-            iconSize: 1,
-            iconAnchor: "bottom"),
-      );
-    }
+    final featureCollection = {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "properties": {},
+          "geometry": {
+            "type": "Point",
+            "coordinates": [latLng.longitude, latLng.latitude]
+          }
+        },
+      ]
+    };
+    mapController?.setGeoJsonSource(
+        AppVariable.GEOCODING_SOURCE, featureCollection);
     setState(() {
       activeLatLng = latLng;
     });
-    if (point.x != -999) {
-      BlocProvider.of<PowerPolesDetailBloc>(context).add(
-          PowerPolesDetailReverseGeocodingEvent(
-              latitude: latLng.latitude, longitude: latLng.longitude));
-    }
+
+    BlocProvider.of<PowerPolesDetailBloc>(context).add(
+        PowerPolesDetailReverseGeocodingEvent(
+            latitude: latLng.latitude, longitude: latLng.longitude));
   }
 
   void _onStyleLoaded() async {
     final ByteData pinBytes = await rootBundle.load('assets/icons/pin.png');
     await mapController?.addImage(
         AppVariable.PIN_ICON, pinBytes.buffer.asUint8List());
+
+    await mapController?.addSource(
+        AppVariable.GEOCODING_SOURCE,
+        const GeojsonSourceProperties(
+            data: AppVariable.emptyFeatureCollection));
+    const symbolProps = SymbolLayerProperties(
+      iconImage: AppVariable.PIN_ICON,
+      iconSize: 1.0,
+      iconAnchor: "bottom",
+    );
+    await mapController?.addSymbolLayer(
+      AppVariable.GEOCODING_SOURCE,
+      AppVariable.GEOCODING_SYMBOL_LAYER,
+      symbolProps,
+      filter: ['==', 'id', AppVariable.GEOCODING_SYMBOL_LAYER],
+    );
+    const innerProps = LineLayerProperties(
+      lineWidth: [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        12,
+        2,
+        16,
+        9
+      ],
+      lineJoin: "round",
+      lineColor: AppColors.innerLineColor,
+      lineOpacity: 0.7,
+    );
+    const outerProps = LineLayerProperties(
+      lineWidth: 2.0,
+      lineJoin: "round",
+      lineColor: "#00725b",
+      lineOpacity: 0.5,
+    );
+    await mapController?.addLineLayer(
+      AppVariable.GEOCODING_SOURCE,
+      AppVariable.GEOCODING_LINE_LAYER,
+      innerProps,
+      filter: ['==', 'id', AppVariable.GEOCODING_LINE_LAYER],
+    );
+    await mapController?.addLineLayer(
+      AppVariable.GEOCODING_SOURCE,
+      AppVariable.GEOCODING_OUTER_LINE_LAYER,
+      outerProps,
+      filter: ['==', 'id', AppVariable.GEOCODING_OUTER_LINE_LAYER],
+    );
+    const fillProps = FillLayerProperties(
+      fillColor: AppColors.innerLineColor,
+      fillOpacity: 0.3,
+      fillOutlineColor: AppColors.outerLineColor,
+    );
+    await mapController?.addFillLayer(
+      AppVariable.GEOCODING_SOURCE,
+      AppVariable.GEOCODING_FILL_LAYER,
+      fillProps,
+      filter: ['==', 'id', AppVariable.GEOCODING_FILL_LAYER],
+    );
   }
 
   void _onUpdate() {
@@ -102,29 +162,41 @@ class _MapCollectPageState extends State<MapCollectPage> {
   }
 
   void _goToSearch() async {
-    final result = await context.router.push(const GeocodingPageRoute());
+    final bloc = BlocProvider.of<PowerPolesDetailBloc>(context);
+    final result = await context.router.push(
+        GeocodingPageRoute(search: bloc.state.reverseGeocoding?.name ?? ""));
     if (result is ReverseGeocoding) {
       final coordinates = result.center["coordinates"] as List<dynamic>;
       final center = LatLng(coordinates[1], coordinates[0]);
-      mapController?.animateCamera(CameraUpdate.newLatLng(center));
-      _onMapClick(
-          const Point(-999, -999), center);
-      BlocProvider.of<PowerPolesDetailBloc>(context)
-          .add(PowerPolesUpdateFromGeocodingEvent(result));
+
+      final f = result.featureCollection();
+
+      await mapController?.setGeoJsonSource(
+          AppVariable.GEOCODING_SOURCE, f.second);
+      bloc.add(PowerPolesUpdateFromGeocodingEvent(result));
+      setState(() {
+        activeLatLng = center;
+      });
+      await mapController?.animateCamera(CameraUpdate.newLatLngBounds(
+        f.first,
+        top: 20,
+        bottom: 60,
+        left: 20,
+        right: 20,
+      ));
     }
   }
 
   void _onClear() async {
-    if(active != null) {
+    if (active != null) {
       await mapController?.removeSymbol(active!);
       active = null;
     }
     activeLatLng = null;
+
     BlocProvider.of<PowerPolesDetailBloc>(context)
         .add(const PowerPolesClearEvent());
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   @override
@@ -158,6 +230,7 @@ class _MapCollectPageState extends State<MapCollectPage> {
               child: GestureDetector(
                 onTap: _goToSearch,
                 child: Card(
+                  elevation: 7,
                   margin: EdgeInsets.zero,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25.0),
@@ -184,7 +257,7 @@ class _MapCollectPageState extends State<MapCollectPage> {
                             builder: (_, state) {
                               return Text(
                                 state.reverseGeocoding?.name ?? "Tìm kiếm...",
-                                style: context.textTheme.bodyMedium,
+                                style: context.textTheme.titleMedium,
                               );
                             },
                             bloc:
@@ -193,9 +266,9 @@ class _MapCollectPageState extends State<MapCollectPage> {
                                 prev.reverseGeocoding !=
                                 current.reverseGeocoding,
                           ),
-
                         ),
-                        IconButton(onPressed: _onClear, icon: const Icon(Icons.close))
+                        IconButton(
+                            onPressed: _onClear, icon: const Icon(Icons.close))
                       ],
                     ),
                   ),
@@ -237,6 +310,7 @@ class _MapCollectPageState extends State<MapCollectPage> {
             opacity: activeLatLng != null ? 1 : 0,
             duration: const Duration(milliseconds: 500),
             child: Card(
+              elevation: 7,
               child: Container(
                 width: context.screenWidth - 15,
                 decoration: BoxDecoration(
