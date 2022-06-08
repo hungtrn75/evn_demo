@@ -52,8 +52,11 @@ class _MapCollectPageState extends State<MapCollectPage> {
       "type": "FeatureCollection",
       "features": [
         {
+          "id": AppVariable.GEOCODING_SYMBOL_LAYER,
           "type": "Feature",
-          "properties": {},
+          "properties": {
+            "id": AppVariable.GEOCODING_SYMBOL_LAYER,
+          },
           "geometry": {
             "type": "Point",
             "coordinates": [latLng.longitude, latLng.latitude]

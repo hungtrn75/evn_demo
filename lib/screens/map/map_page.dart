@@ -510,7 +510,7 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
           ),
           MapboxMap(
             styleString: styleString,
-            accessToken: const String.fromEnvironment("ACCESS_TOKEN"),
+            accessToken: AppUrl.MAP_ACCESS_TOKEN,
             onMapCreated: _onMapCreated,
             initialCameraPosition: const CameraPosition(
                 target: LatLng(20.99759, 105.81299), zoom: 15),
