@@ -150,18 +150,49 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
     await mapController?.addSymbolLayer(
       AppVariable.MAP_SOURCE,
       AppVariable.MAP_SYMBOL_LAYER,
-      const SymbolLayerProperties(iconImage: [
-        "get",
-        "defined"
-      ], iconSize: [
+      const SymbolLayerProperties(
+        iconImage: ["get", "defined"],
+        iconSize: [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          8,
+          3.5,
+          16,
+          1.5
+        ],
+        iconAllowOverlap: true,
+        textAllowOverlap: true,
+        iconIgnorePlacement: true,
+        textIgnorePlacement: true,
+        iconAnchor: "top",
+        iconOffset: [
+          Expressions.literal,
+          [0, -4]
+        ],
+      ),
+    );
+
+    const lineProps = LineLayerProperties(
+      lineWidth: [
         "interpolate",
         ["linear"],
         ["zoom"],
-        8,
-        3.5,
+        12,
+        1,
         16,
-        1.5
-      ], iconAllowOverlap: false),
+        2
+      ],
+      lineJoin: "round",
+      lineColor: AppColors.innerLineColor,
+      lineOpacity: 0.7,
+    );
+
+    await mapController?.addLineLayer(
+      AppVariable.MAP_SOURCE,
+      AppVariable.MAP_LINE_LAYER,
+      lineProps,
+      filter: ['==', 'id', AppVariable.MAP_LINE_LAYER],
     );
 
     /** ROUTiNG **/
@@ -187,20 +218,19 @@ class _MapPageState extends State<MapPage> with SingleTickerProviderStateMixin {
       lineOpacity: 0.7,
     );
     const outerProps = LineLayerProperties(
-      lineWidth: 2.0,
-      lineJoin: "round",
-      lineGapWidth: [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        12,
-        2,
-        16,
-        9
-      ],
-      lineColor: AppColors.outerLineColor,
-      lineOpacity: 0.7
-    );
+        lineWidth: 2.0,
+        lineJoin: "round",
+        lineGapWidth: [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          12,
+          2,
+          16,
+          9
+        ],
+        lineColor: AppColors.outerLineColor,
+        lineOpacity: 0.7);
 
     await mapController?.addLineLayer(
       AppVariable.ROUTING_SOURCE,

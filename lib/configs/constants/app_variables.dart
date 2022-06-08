@@ -6,15 +6,21 @@ class AppVariable {
   static const String ROUTING_SOURCE = "routing_source";
   static const String ROUTING_INNER_LINE_LAYER = "routing_inner_line_layer";
   static const String ROUTING_OUTER_LINE_LAYER = "routing_outer_line_layer";
-  static const String ROUTING_SOURCE_CIRCLE_LAYER = "routing_source_circle_layer";
-  static const String ROUTING_INNER_DESTINATION_CIRCLE_LAYER = "routing_inner_destination_circle_layer";
-  static const String ROUTING_OUTER_DESTINATION_CIRCLE_LAYER = "routing_outer_destination_circle_layer";
+  static const String ROUTING_SOURCE_CIRCLE_LAYER =
+      "routing_source_circle_layer";
+  static const String ROUTING_INNER_DESTINATION_CIRCLE_LAYER =
+      "routing_inner_destination_circle_layer";
+  static const String ROUTING_OUTER_DESTINATION_CIRCLE_LAYER =
+      "routing_outer_destination_circle_layer";
   static const String ROUTING_SYMBOL_LAYER = "routing_symbol_layer";
 
   static const String NAVIGATION_SOURCE = "navigation_source";
-  static const String NAVIGATION_BODY_INNER_LAYER = "navigation_inner_body_layer";
-  static const String NAVIGATION_BODY_OUTER_LAYER = "navigation_outer_body_layer";
-  static const String NAVIGATION_HEAD_ARROW_LAYER = "navigation_head_arrow_layer";
+  static const String NAVIGATION_BODY_INNER_LAYER =
+      "navigation_inner_body_layer";
+  static const String NAVIGATION_BODY_OUTER_LAYER =
+      "navigation_outer_body_layer";
+  static const String NAVIGATION_HEAD_ARROW_LAYER =
+      "navigation_head_arrow_layer";
 
   static const String GEOCODING_SOURCE = "geocoding_source";
   static const String GEOCODING_SYMBOL_LAYER = "geocoding_symbol_layer";
@@ -24,13 +30,16 @@ class AppVariable {
 
   static const String MAP_SOURCE = "map_source";
   static const String MAP_SYMBOL_LAYER = "map_symbol_layer";
+  static const String MAP_LINE_LAYER = "map_line_layer";
   static const String PIN_ICON = "pin_icon";
   static const String DEFINED_ICON = "defined_icon";
   static const String NON_DEFINED_ICON = "non_defined_icon";
   static const String HEAD_ARROW = "head_arrow";
 
-
-  static const emptyFeatureCollection = {"type": "FeatureCollection", "features": []};
+  static const emptyFeatureCollection = {
+    "type": "FeatureCollection",
+    "features": []
+  };
   static const featureCollection = {
     "type": "FeatureCollection",
     "features": [
@@ -295,9 +304,25 @@ class AppVariable {
 
   static Map<String, dynamic> listToGeoJson(List<PowerPoles> data,
       {String? active}) {
+    final lineStringFeature = data.length > 1
+        ? [
+            {
+              "id": AppVariable.MAP_LINE_LAYER,
+              "type": "Feature",
+              "properties": {
+                "id": AppVariable.MAP_LINE_LAYER,
+              },
+              "geometry": {
+                "type": "LineString",
+                "coordinates":
+                    data.map((e) => [e.longitude, e.latitude]).toList(),
+              }
+            }
+          ]
+        : [];
     final result = {
       "type": "FeatureCollection",
-      "features": data.map((element) => element.toJson(active)).toList(),
+      "features": [...data.map((element) => element.toJson(active)).toList(),...lineStringFeature],
     };
 
     return result;
